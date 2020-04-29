@@ -1,6 +1,6 @@
 <?php
 
-$user=array();
+$userarray=array();
 
 
 // function show_menu()
@@ -48,95 +48,95 @@ $user=array();
 // }
 
 
-function register()
-{
-	
-	if(isset($_POST['submit']))
-	{
-		$username=$_POST['username'];
-		$password=$_POST['password'];
-		if(strlen($username)==0 || strlen($password)==0)
-		{
-			
-			echo "username or password can't be empty";
-		}
-		else
-		{	
-			$username=$_POST['username'];
-			$password= password_hash($_POST['password'], PASSWORD_DEFAULT);
-			$email=$_POST['email'];
+// function register()
+// {
 
-			$conn=connect();
-			$query="INSERT INTO user (username,password,email) VALUES ('$username','$password','$email')";
-			$result=$conn->query($query);
+// 	if(isset($_POST['submit']))
+// 	{
+// 		$username=$_POST['username'];
+// 		$password=$_POST['password'];
+// 		if(strlen($username)==0 || strlen($password)==0)
+// 		{
 
-			if($conn->error)
-			{
-				echo "Could not register at the moment.Please Try again later"; 
-			}
-			else
-			{
-				header("location:loginpage.php");
-			}
-		}
+// 			echo "username or password can't be empty";
+// 		}
+// 		else
+// 		{	
+// 			$username=$_POST['username'];
+// 			$password= password_hash($_POST['password'], PASSWORD_DEFAULT);
+// 			$email=$_POST['email'];
 
-	}
-	
+// 			$conn=connect();
+// 			$query="INSERT INTO user (username,password,email) VALUES ('$username','$password','$email')";
+// 			$result=$conn->query($query);
 
+// 			if($conn->error)
+// 			{
+// 				echo "Could not register at the moment.Please Try again later"; 
+// 			}
+// 			else
+// 			{
+// 				header("location:loginpage.php");
+// 			}
+// 		}
 
-}
+// 	}
 
 
-function check()
-{
-	$msg="";
-	$conn=connect();
-	session_start();
-	if(isset($_COOKIE['cookie1']))
-	{
-		header("location:login.php");
-	}
-	
-	else if(isset($_POST['login']))
-	{
 
-		$username=$_POST['username1'];
-		$password=$_POST['password1'];
+// }
 
-		if(strlen($username)==0 || strlen($password)==0)
-		{
-			
-			echo "username odbc_rollback(connection_id) password can't be empty";
 
-		}
-		else
-		{
-			$query="SELECT password FROM user WHERE username='$username'";
-			$result=$conn->query($query);
+// function check()
+// {
+// 	$msg="";
+// 	$conn=connect();
+// 	session_start();
+// 	if(isset($_COOKIE['cookie1']))
+// 	{
+// 		header("location:login.php");
+// 	}
 
-			
+// 	else if(isset($_POST['login']))
+// 	{
 
-			while($row = $result->fetch_assoc())
-			{
-				
-				$checkpass=$row['password'];
+// 		$username=$_POST['username1'];
+// 		$password=$_POST['password1'];
 
-				if(password_verify($password,$row['password']))
-				{
-					
-					login();
-					
-					
-				}
-				
-			}
-			$msg ="username or password incorrect";
-			echo $msg;
+// 		if(strlen($username)==0 || strlen($password)==0)
+// 		{
 
-		}
-	}
+// 			echo "username odbc_rollback(connection_id) password can't be empty";
 
-}
+// 		}
+// 		else
+// 		{
+// 			$query="SELECT password FROM user WHERE username='$username'";
+// 			$result=$conn->query($query);
+
+
+
+// 			while($row = $result->fetch_assoc())
+// 			{
+
+// 				$checkpass=$row['password'];
+
+// 				if(password_verify($password,$row['password']))
+// 				{
+
+// 					login();
+
+
+// 				}
+
+// 			}
+// 			$msg ="username or password incorrect";
+// 			echo $msg;
+
+// 		}
+// 	}
+
+// }
 
 
 function login()
@@ -237,9 +237,9 @@ function printregister()
  	// include("navbar.php");
 
 	// include("user.txt");
-   
-	
-	
+
+	global $userarray;
+	$value=array();		
 	if(isset($_POST['submit']))
 	{
 		$username=$_POST['username'];
@@ -254,27 +254,27 @@ function printregister()
 			$username=$_POST['username'];
 			$password= password_hash($_POST['password'], PASSWORD_DEFAULT);
 			$email=$_POST['email'];
-			$user_id=10;
+			
 
-			$value = array('user_id' =>"$user_id",'username' => "$username",        'password' => "$password",'email' => "$email");
+			// $value = array('user_id' =>"$user_id",'username' => "$username",        'password' => "$password",'email' => "$email");
 			
 			
-			// array_push($user,$value);
-			// $myfile = fopen("user.txt", "r+") or die("Unable to open file!");
-			// $user = file_get_contents('user.txt');
-			// $user=$value;
+			 // $userarray[]=$value;
+			$myfile = fopen("user.txt", "a+") or die("Unable to open file!");
 			
-			// $txt=print_r($user,TRUE);
 			
-			// fwrite($myfile, $txt);
-			// print_r($user);
-			// fclose($myfile);
+			$txt = $username . "+" . $password ."+".$email;
+			
+			fwrite($myfile, $txt);
 
 
 
 
 			// header("location:loginpage.php");
-			
+			// print_r($user);
+			// fclose($myfile);
+			  // $user = file_get_contents('user.txt');
+			// $user=$value;
 
 
 
@@ -294,7 +294,7 @@ function printcheck()
 {
 	session_start();
 	// include("navbar.php");
-	
+
 	$msg="";
 	
 	if(isset($_COOKIE['cookie1']))
@@ -316,23 +316,27 @@ function printcheck()
 		}
 		else
 		{
+			$myfile = fopen("user.txt", "r+") or die("Unable to open file!");
 			
-			foreach( $user as $value) 
-			{
 
-				if(password_verify($password,$value['password']))
-				{
+
+				$count=1;
+				while (!feof($myfile)) {
+					$buffer = fgets($myfile);
+					$data = explode("+",$buffer);
 					
-					// login();
-					
-					
+					for($i=0;$i<= sizeof($data);$i++)
+					{
+						if(password_hash($password, (int)$data[$i]))
+						{
+							echo "Match";
+						}
+					}
+
 				}
 				
-			}
-			// print_r($user);
-			$msg ="username or password incorrect";
-			echo $msg;
-
+		
+			
 			
 
 			
